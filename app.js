@@ -23,6 +23,12 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
     credentials: true, // Set to true if you're using cookies or authentication headers
 }));
+app.use(cors({
+    origin: 'https://patternhub.ir', // Replace with the allowed origin(s)
+    methods: ['GET', 'POST'], // Specify the allowed HTTP methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
+    credentials: true, // Set to true if you're using cookies or authentication headers
+}));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
