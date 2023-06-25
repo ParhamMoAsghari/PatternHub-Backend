@@ -1,90 +1,117 @@
-# الگوی Builder
+# الگوی سازنده (Builder Pattern)
 
-الگوی Builder یک الگوی طراحی ایجادی است که به شما امکان می دهد یک شیء پیچیده را مرحله به مرحله ساخت کنید. این الگو ساخت یک شیء را از نمایش آن جدا می کند و اجازه می دهد فرآیند ساخت یک نمایش متفاوت از آن را داشته باشید.
+### همچنین شناخته شده به عنوان:
+- سازنده (Creator)
 
-## مثال: ساخت خودرو
+### انگیزه (Motivation):
+الگوی سازنده مورد استفاده قرار می‌گیرد وقتی که می‌خواهیم یک شیء پیچیده را به صورت مرحله به مرحله ایجاد کنیم و قابل تغییر و تنظیم باشد. این الگو اجازه می‌دهد تا فرآیند ساخت یک شیء را از جزئیات آن جدا کنیم و از آن استفاده کنیم تا تنظیمات مختلفی را برای ساخت شیء فراهم کنیم.
 
-فرض کنید می خواهیم یک شیء `Car` که شامل ویژگی های مختلفی مانند مدل، رنگ، نوع موتور و تعداد درها است را بسازیم. می توانیم از الگوی Builder برای ساخت شیء `Car` به صورت انعطاف پذیر و کنترل شده استفاده کنیم.
+### قابلیت استفاده (Applicability):
+الگوی سازنده وقتی مناسب است که:
+- بخواهیم یک شیء پیچیده را مرحله به مرحله بسازیم و قابل تغییر و تنظیم باشد.
+- بخواهیم از یک متد ساخت استفاده کنیم که قابلیت ایجاد انواع مختلفی از شیء را فراهم کند.
+- بخواهیم فرآیند ساخت یک شیء را از جزئیات آن جدا کنیم تا بتوانیم ساختار و نحوه ساخت آن را تغییر دهیم.
 
-اولاً، بیایید کلاس `Car` و ویژگی های آن را تعریف کنیم:
+### ساختار (Structure):
+الگوی سازنده شامل موارد زیر است:
+- `Builder`: رابطی است که مشخص می‌کند چه گونه قسمت‌های مختلف شیء را ساخته و تنظیم کند.
+- `ConcreteBuilder`: کلاسی است که `Builder` را پیاده‌سازی می‌کند و قسمت‌های مختلف شیء را ساخته و تنظیم می‌کند.
+- `Director`: کلاسی است که فرآیند ساخت شیء را کنترل می‌کند و از `Builder` برای ساخت شیء استفاده می‌کند.
+- `Product`: شیء نهایی که توسط `Builder` ساخته می‌شود.
+
+### شرکت‌کنند
+
+گان (Participants):
+- `Builder`: رابطی که مشخص می‌کند چه گونه قسمت‌های مختلف شیء را ساخته و تنظیم کند.
+- `ConcreteBuilder`: کلاسی که `Builder` را پیاده‌سازی می‌کند و قسمت‌های مختلف شیء را ساخته و تنظیم می‌کند.
+- `Director`: کلاسی که فرآیند ساخت شیء را کنترل می‌کند و از `Builder` برای ساخت شیء استفاده می‌کند.
+- `Product`: شیء نهایی که توسط `Builder` ساخته می‌شود.
+
+### همکاری (Collaborations):
+- `Director` با استفاده از `Builder` فرآیند ساخت شیء را کنترل می‌کند.
+- `ConcreteBuilder` شیء را ساخته و تنظیم می‌کند.
+- `Product` شیء نهایی است که توسط `Builder` ساخته می‌شود.
+
+### پیامدها (Consequences):
+استفاده از الگوی سازنده دارای مزایا و معایب زیر است:
+- **مزایا**:
+    - امکان ساخت شیء‌های پیچیده و قابل تغییر بدون وابستگی به ساختار داخلی آنها.
+    - امکان تنظیمات مختلف در فرآیند ساخت یک شیء.
+    - جدا بودن فرآیند ساخت از نحوه استفاده از شیء و از هم جدا بودن سطوح بالا و پایین در ساختار برنامه.
+
+- **معایب**:
+    - ایجاد کلاس‌های بیشتری در برنامه به دنبال دارد.
+    - ایجاد کدهای بیشتری برای پیاده‌سازی الگو و احتمال خطا بیشتری.
+
+### پیاده‌سازی (Implementation):
+در زبان برنامه‌نویسی C#، می‌توانیم الگوی سازنده را به صورت زیر پیاده‌سازی کنیم:
 
 ```csharp
-public class Car
+// Product
+public class Product
 {
-    public string Model { get; set; }
-    public string Color { get; set; }
-    public string EngineType { get; set; }
-    public int NumDoors { get; set; }
+    public string PartA { get; set; }
+    public string PartB { get; set; }
+    public string PartC { get; set; }
+}
+
+// Builder
+
+
+public interface IBuilder
+{
+    void BuildPartA();
+    void BuildPartB();
+    void BuildPartC();
+    Product GetResult();
+}
+
+// ConcreteBuilder
+public class ConcreteBuilder : IBuilder
+{
+    private Product _product;
+
+    public ConcreteBuilder()
+    {
+        _product = new Product();
+    }
+
+    public void BuildPartA()
+    {
+        _product.PartA = "Part A";
+    }
+
+    public void BuildPartB()
+    {
+        _product.PartB = "Part B";
+    }
+
+    public void BuildPartC()
+    {
+        _product.PartC = "Part C";
+    }
+
+    public Product GetResult()
+    {
+        return _product;
+    }
+}
+
+// Director
+public class Director
+{
+    public void Construct(IBuilder builder)
+    {
+        builder.BuildPartA();
+        builder.BuildPartB();
+        builder.BuildPartC();
+    }
 }
 ```
 
-سپس، یک کلاس سازنده جداگانه به نام `CarBuilder` ایجاد می کنیم که فرآیند ساخت را مدیریت می کند:
+### استفاده‌های شناخته شده (Known Uses):
+الگوی سازنده در زبان برنامه‌نویسی C# در کتابخانه‌هایی مانند Entity Framework برای ساخت کوئری‌های پیچیده استفاده می‌شود. همچنین در ساختار UI برنامه‌های گرافیکی و ساختار سیستم‌های مبتنی بر کامپوننت نیز استفاده می‌شود.
 
-```csharp
-public class CarBuilder
-{
-    private Car car;
-
-    public CarBuilder()
-    {
-        car = new Car();
-    }
-
-    public CarBuilder SetModel(string model)
-    {
-        car.Model = model;
-        return this;
-    }
-
-    public CarBuilder SetColor(string color)
-    {
-        car.Color = color;
-        return this;
-    }
-
-    public CarBuilder SetEngineType(string engineType)
-    {
-        car.EngineType = engineType;
-        return this;
-    }
-
-    public CarBuilder SetNumDoors(int numDoors)
-    {
-        car.NumDoors = numDoors;
-        return this;
-    }
-
-    public Car Build()
-    {
-        return car;
-    }
-}
-```
-
-در کلاس `CarBuilder`، متد هایی برای تنظیم هر ویژگی شیء `Car` تعریف شده است. هر متد مقدار مربوطه را تنظیم کرده و نمونه سازی از خود کلاس سازنده را برمی گرداند که امکان پیوند کردن متدها را فراهم می کند.
-
-متد `Build
-
-()` شیء `Car` ساخته شده را برمی گرداند.
-
-حالا، از سازنده برای ساخت یک شیء `Car` استفاده می کنیم:
-
-```csharp
-CarBuilder builder = new CarBuilder();
-Car car = builder.SetModel("Sedan")
-                  .SetColor("Red")
-                  .SetEngineType("Gasoline")
-                  .SetNumDoors(4)
-                  .Build();
-
-Console.WriteLine(car.Model);           // Output: Sedan
-Console.WriteLine(car.Color);           // Output: Red
-Console.WriteLine(car.EngineType);      // Output: Gasoline
-Console.WriteLine(car.NumDoors);        // Output: 4
-```
-
-در کد بالا، یک نمونه از `CarBuilder` ایجاد می کنیم و متدهای سازنده را به صورت زنجیره ای برای تنظیم ویژگی های مورد نظر خودرو استفاده می کنیم. در نهایت، متد `Build()` را فراخوانی می کنیم تا شیء `Car` ساخته شده را دریافت کنیم.
-
-با استفاده از الگوی Builder، می توانیم به راحتی ویژگی های شیء `Car` را به دلخواه تنظیم کنیم بدون ایجاد اشغال در سازنده یا ایجاد چندین سازنده با مقادیر پیش فرض مختلف. علاوه بر این، بر روی فرآیند ساخت مراقبت داریم و می توانیم ویژگی های مورد نیاز را اجبار کنیم.
-
-الگوی Builder به ویژه زمانی که با شیء های پیچیده که نیاز به فرآیند ساخت مرحله به مرحله یا پارامترهای اختیاری دارند، سروکار دارد. این الگو یک راه روشن و انعطاف پذیر برای ساخت شیء فراهم می کند که قابلیت خوانایی و قابلیت نگهداری کد را افزایش می دهد.
+### الگوهای مرتبط (Related Patterns):
+- **Abstract Factory Pattern**: Abstract Factory Pattern می‌تواند از الگوی سازنده استفاده کند تا شیء‌های مرتبط را تولید کند، اما الگوی سازنده فقط بر روی یک شیء کار می‌کند.
+- **Prototype Pattern**: Prototype Pattern از الگوی سازنده استفاده می‌کند تا شیء‌های جدید را از شیء‌های موجود تولید کند، اما تفاوت اصلی در این است که Prototype Pattern از روش کپی استفاده می‌کند در حالی که الگوی سازنده شیء را به صورت مرحله به مرحله ساخت می‌کند.
