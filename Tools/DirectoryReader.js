@@ -13,15 +13,17 @@ class DirectoryReader extends FileReaderStrategy {
             const fileObjects = await Promise.all(files.map(async file => {
                 const fileExtension = path.extname(file);
                 const fileName = path.basename(file, fileExtension);
-                const { mtime } = await fs.stat(path.join(this.filePath, file));
-                return { name: fileName, extension: fileExtension, lastModification: mtime };
+                if (fileName !== 'descriptions') {
+                    const { mtime } = await fs.stat(path.join(this.filePath, file));
+                    return { name: fileName, extension: fileExtension, lastModification: mtime };
+                }
             }));
-            return fileObjects;
-        } catch (e) {
-            console.error(e);
+            return fileObjects.filter(file => file !== undefined);
+        } catch (error) {
+            console.error(error);
             return;
         }
-    };
+    }
 }
 
 module.exports = DirectoryReader;

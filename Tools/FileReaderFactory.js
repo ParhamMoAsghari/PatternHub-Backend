@@ -1,5 +1,7 @@
 const MarkdownFileReader = require('./MarkdownFileReader');
 const path = require("path");
+const JsonFileReader = require("./JsonFileReader");
+const ImageFileReader = require("./ImageFileReader");
 
 class FileReaderFactory {
     createFileReader(filePath) {
@@ -7,7 +9,10 @@ class FileReaderFactory {
         switch (fileExtension) {
             case '.md':
                 return new MarkdownFileReader(filePath);
-            // Add more cases for other file types if needed
+            case '.json':
+                return new JsonFileReader(filePath);
+            case '.jpg':
+                return new ImageFileReader(filePath);
             default:
                 throw new Error(`Unsupported file extension: ${fileExtension}`);
         }
