@@ -18,13 +18,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with the allowed origin(s)
-    methods: ['GET', 'POST'], // Specify the allowed HTTP methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
-    credentials: true, // Set to true if you're using cookies or authentication headers
-}));
-app.use(cors({
-    origin: 'https://patternhub.ir', // Replace with the allowed origin(s)
+    origin: '*', // Replace with the allowed origin(s)
     methods: ['GET', 'POST'], // Specify the allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
     credentials: true, // Set to true if you're using cookies or authentication headers

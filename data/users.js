@@ -1,24 +1,64 @@
 // users.js
-let users = require('./users.json');
+const {MongoClient, ServerApiVersion} = require('mongodb');
+require('dotenv').config();
 
-function getUserById(id) {
-    return users.find(user => user.id === id);
+const uri = process.env.DB_URI;
+const client = new MongoClient(uri, {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
+    }
+});
+
+// Connect to the MongoDB Atlas cluster
+async function connect() {
+    try {
+        await client.connect();
+        console.log('Connected to MongoDB Atlas');
+        // Send a ping to confirm a successful connection
+        await client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+    } catch (error) {
+        console.error('Failed to connect to MongoDB Atlas', error);
+    }
 }
 
-function getUserByEmail(email) {
-    return users.find(user => user.email === email);
+// Get a reference to the users collection
+function getUsersCollection() {
+    const db = client.db('patternhubDB');
+    const usersCollection = db.collection('users');
+    return usersCollection;
 }
 
-function createUser(user) {
+// Retrieve a user by their ID
+async function getUserById(id) {
+    const usersCollection = getUsersCollection();
+    const user = await usersCollection.findOne({id});
+    return user;
+}
+
+// Retrieve a user by their email
+async function getUserByEmail(email) {
+    const usersCollection = getUsersCollection();
+    const user = await usersCollection.findOne({email});
+    return user;
+}
+
+// Create a new user
+async function createUser(user) {
+    const usersCollection = getUsersCollection();
     const newUser = {
         id: Date.now().toString(),
         ...user
     };
-    users.push(newUser);
+    await usersCollection.insertOne(newUser);
     return newUser;
 }
 
 module.exports = {
+    connect,
     getUserById,
     getUserByEmail,
     createUser

@@ -2,7 +2,8 @@ const passport = require('passport');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const { getUserById } = require('./data/users'); // Implement this function to fetch user by ID
-const secretKey = 'your-secret-key'; // Replace with your secret key
+require('dotenv').config();
+const secretKey = process.env.JWT_SECRET; // Replace with your secret key
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
