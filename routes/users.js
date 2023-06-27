@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const usersDB = require('../data/users');
 const validator = require('validator');
-const {getUserByEmail, createUser} = require("../data/users");
 require('dotenv').config();
 usersDB.connect();
 
@@ -34,14 +33,14 @@ router.post('/register', async (req, res) => {
             console.log('Invalid password')
             return res.status(400).json({message: 'رمز عبور باید حداقل 8 کاراکتر باشد!'});
         }
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await usersDB.getUserByEmail(email);
         if (existingUser) {
             return res.status(409).json({message: 'این ایمیل تکراری است !'});
         }
         const saltRounds = parseInt(process.env.SALT_ROUNDS); // Number of salt rounds (higher value means stronger salt, but slower hashing)
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = createUser({name: name, email: email, password: hashedPassword, salt: salt});
+        const newUser = usersDB.createUser({name: name, email: email, password: hashedPassword, salt: salt});
 
         res.status(201).json({message: 'با موفقیت ثبت نام شدید!', user: newUser});
     } catch (error) {
@@ -53,7 +52,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const {email, password} = req.body;
-        const user = await getUserByEmail(email);
+        const user = await usersDB.getUserByEmail(email);
         if (!user) {
             return res.status(401).json({message: 'ایمیل یا رمز نامعتبر!'});
         }
