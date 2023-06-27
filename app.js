@@ -6,6 +6,7 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const patternsRouter = require('./routes/patterns');
+const sendEmailRouter = require('./routes/sendEmail');
 const passport = require("./passport");
 const cors = require("cors");
 
@@ -27,5 +28,6 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/patterns', patternsRouter)
+app.use('/mail', sendEmailRouter)
 
 module.exports = app;
