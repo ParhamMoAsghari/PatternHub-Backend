@@ -1,65 +1,55 @@
-// users.js
-const {MongoClient, ServerApiVersion} = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config();
 
-const uri = process.env.DB_URI;
-const client = new MongoClient(uri, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
+class Users {
+    constructor() {
+        this.client = null;
+        this.db = null;
+        this.usersCollection = null;
     }
-});
 
-// Connect to the MongoDB Atlas cluster
-async function connect() {
-    try {
-        await client.connect();
-        console.log('Connected to MongoDB Atlas');
-        // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    async connect() {
+        try {
+            const uri = process.env.DB_URI;
+            this.client = new MongoClient(uri, {
+                serverApi: {
+                    version: ServerApiVersion.v1,
+                    strict: true,
+                    deprecationErrors: true,
+                },
+            });
 
-    } catch (error) {
-        console.error('Failed to connect to MongoDB Atlas', error);
+            await this.client.connect();
+            console.log('Connected to MongoDB Atlas');
+            await this.client.db('admin').command({ ping: 1 });
+            console.log('Pinged your deployment. You successfully connected to MongoDB!');
+
+            this.db = this.client.db('patternhubDB');
+            this.usersCollection = this.db.collection('users');
+            console.log('Users collection is ready!')
+        } catch (error) {
+            console.error('Failed to connect to MongoDB Atlas', error);
+        }
+    }
+
+    async getUserById(id) {
+        const user = await this.usersCollection.findOne({ id });
+        return user;
+    }
+
+    async getUserByEmail(email) {
+        const user = await this.usersCollection.findOne({ email });
+        return user;
+    }
+
+    async createUser(user) {
+        const newUser = {
+            id: Date.now().toString(),
+            ...user,
+        };
+        await this.usersCollection.insertOne(newUser);
+        return newUser;
     }
 }
 
-// Get a reference to the users collection
-function getUsersCollection() {
-    const db = client.db('patternhubDB');
-    const usersCollection = db.collection('users');
-    return usersCollection;
-}
-
-// Retrieve a user by their ID
-async function getUserById(id) {
-    const usersCollection = getUsersCollection();
-    const user = await usersCollection.findOne({id});
-    return user;
-}
-
-// Retrieve a user by their email
-async function getUserByEmail(email) {
-    const usersCollection = getUsersCollection();
-    const user = await usersCollection.findOne({email});
-    return user;
-}
-
-// Create a new user
-async function createUser(user) {
-    const usersCollection = getUsersCollection();
-    const newUser = {
-        id: Date.now().toString(),
-        ...user
-    };
-    await usersCollection.insertOne(newUser);
-    return newUser;
-}
-
-module.exports = {
-    connect,
-    getUserById,
-    getUserByEmail,
-    createUser
-};
+module.exports = new Users();
